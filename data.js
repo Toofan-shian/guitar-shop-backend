@@ -1,4 +1,4 @@
-data = [
+let products = [
   {
     title: "American Professional II Telecaster",
     price: 1799.99,
@@ -11,7 +11,7 @@ data = [
   },
   {
     title: 'Tim Armstrong Hellcat',
-    price: 459.99,
+    price: 759.99,
     type: 'Acoustic Guitar',
     popular: true,
     id: 234,
@@ -38,7 +38,7 @@ data = [
   {
     title: 'Player Plus Telecaster',
     type: 'Electric Guitar',
-    price: 1099.99,
+    price: 949.99,
     popular: false,
     id: 567,
     description: `Fusing classic Fender® design with player-centric features and exciting new finishes, the Player Plus Telecaster® delivers superb playability and unmistakable style. Powered by a set of Player Plus Noiseless™ pickups, the Player Plus Tele® delivers warm, sweet Tele® twang – without hum. A push-pull switch on the tone control engages both pickups in series operation, delivering increased output and body. The silky satin Modern “C” Player Plus Tele® neck fits your hand like a glove, with smooth rolled edges for supreme comfort. The 12” radius fingerboard and 22 medium jumbo frets facilitate fluid leads and choke free bends. A modern 6-saddle Tele bridge with block steel saddles adds a touch of brightness while providing precise intonation and the locking tuners provide rock-solid tuning and make string changes quick and easy. With classic Fender style, advanced features and stunning new finishes, the Player Plus Telecaster is the perfect tool to spark your creativity and stand out from the crowd.`
@@ -74,13 +74,21 @@ data = [
   {
     title: 'Jaco Pastorius Jazz Bass',
     type: 'Electric Bass',
-    price: 2149.99,
+    price: 1149.99,
     popular: false,
-    id: 890,
+    id: 901,
     description: `Widely regarded as the world's greatest electric bass player, Jaco Pastorius redefined the voice of the instrument and the role of the bassist, merging the worlds of R&B, rock, jazz, classical and Caribbean music and reshaping the musical landscape with his dazzling playing and visionary approach. And he did it all with a Jazz Bass. His unmistakable voice and signature sound came from his mind, his heart, his hands and his sunburst fretless Jazz Bass, recreated here with unmistakable look, tone and feel as the Jaco Pastorius Jazz Bass.`
   },
-
-
 ]
 
-module.exports = { data }
+let users = [{
+  id: 1234,
+  cartItems: [
+    // {
+    //   itemId: 123,
+    //   quantity: 1
+    // }
+  ]
+}]
+
+module.exports = {products, users}
