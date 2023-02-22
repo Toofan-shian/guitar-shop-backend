@@ -26,15 +26,26 @@ server.post('/:userId/cartItems', (req, res) => {
     userCartItem.quantity += 1;
     res.status(201)
     res.end()
-    console.log('1')
     return
   }
   user.cartItems.push(product)
   res.status(201)
   res.end()
-  console.log('2')
 })
 
+server.delete('/:userId/cartItems/:itemId', (req, res) => {
+  let {userId, itemId} = req.params;
+  let user = users.find(user => user.id == userId);
+  let cartItemIndex = user.cartItems.findIndex(item => item.itemId == itemId)
+  if (cartItemIndex < 0) {
+    res.status(400).json({error: 'item does not exist'})
+    console.log('1')
+    return;
+  }
+  user.cartItems.splice(cartItemIndex, 1);
+  res.status(200).json(user.cartItems)
+  console.log('2')
+})
 
 server.listen(5000, (err) => {
   if (err) {

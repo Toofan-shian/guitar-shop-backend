@@ -84,10 +84,10 @@ let products = [
 let users = [{
   id: 1234,
   cartItems: [
-    // {
-    //   itemId: 123,
-    //   quantity: 1
-    // }
+    {
+      itemId: 123,
+      quantity: 1
+    }
   ]
 }]
 
