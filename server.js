@@ -47,6 +47,15 @@ server.delete('/:userId/cartItems/:itemId', (req, res) => {
   console.log('2')
 })
 
+server.patch('/:userId/cartItems', (req, res) => {
+  let {userId} = req.params;
+  let {product} = req.body;
+  let user = users.find(user => user.id == userId)
+  let cartItemIndex = user.cartItems.findIndex(p => p.itemId == product.itemId);
+  user.cartItems.splice(cartItemIndex, 1, product)
+  res.status(200).json(user.cartItems)
+})
+
 server.listen(5000, (err) => {
   if (err) {
     console.log(err)
