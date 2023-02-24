@@ -5,18 +5,24 @@ const server = express()
 
 server.use(express.json())
 
+// all products in store
 server.get('/products/all', (req, res) => {
   res.status(200).json(products)
 })
 
+// products in cart
 server.get('/:userId/cartItems', (req, res) => {
   let userId = req.params.userId
   let user = users.find(user => user.id == userId);
-  let productIds = user.cartItems.map(item => item.itemId)
-  let cartItems = productIds.map(id => products.find(p => p.id == id))
-  res.status(200).json(cartItems)
+  res.status(200).json(user.cartItems)
+
+  
+  // let productIds = user.cartItems.map(item => item.itemId)
+  // let cartItems = productIds.map(id => products.find(p => p.id == id))
+  // res.status(200).json(cartItems)
 })
 
+// add to cart from product details
 server.post('/:userId/cartItems', (req, res) => {
   let {product} = req.body;
   let {userId} = req.params;
@@ -33,18 +39,17 @@ server.post('/:userId/cartItems', (req, res) => {
   res.end()
 })
 
+// remove cart item
 server.delete('/:userId/cartItems/:itemId', (req, res) => {
   let {userId, itemId} = req.params;
   let user = users.find(user => user.id == userId);
   let cartItemIndex = user.cartItems.findIndex(item => item.itemId == itemId)
   if (cartItemIndex < 0) {
     res.status(400).json({error: 'item does not exist'})
-    console.log('1')
     return;
   }
   user.cartItems.splice(cartItemIndex, 1);
   res.status(200).json(user.cartItems)
-  console.log('2')
 })
 
 server.patch('/:userId/cartItems', (req, res) => {
