@@ -81,17 +81,26 @@ server.delete('/:userId/cartItems/:itemId', async (req, res) => {
     let response = await db.collection('users').updateOne({id: +userId}, {$set: {cartItems: cartItems}})
     return res.status(201).json(response)
   } catch (error) {
-    return res.status(500).json({"error": `${erroe}`})    
+    return res.status(500).json({"error": `${error}`})
   }
 })
 
-// product auantity change in cart
-server.patch('/:userId/cartItems', (req, res) => {
+// product quantity change in cart
+server.patch('/:userId/cartItems', async (req, res) => {
   let {userId} = req.params;
   let {product} = req.body;
-  let user = users.find(user => user.id == userId)
-  let cartItemIndex = user.cartItems.findIndex(p => p.itemId == product.itemId);
-  user.cartItems.splice(cartItemIndex, 1, product)
-  res.status(200).json(user.cartItems)
+
+  try {
+    let user = await db.collection('users').findOne({id: +userId})
+    let cartItems = user.cartItems;
+    let itemIndex = cartItems.findIndex(item => item.itemId == product.itemId)
+    cartItems.splice(itemIndex, 1, product)
+  
+    let response = await db.collection('users').updateOne({id: +userId}, {$set: {cartItems: cartItems}})
+    return res.status(201).json(response)
+  }
+  catch (err) {
+    return res.status(500).json({"error": `${err}`})
+  }
 })
 
