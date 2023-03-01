@@ -69,16 +69,20 @@ server.post('/:userId/cartItems', async (req, res) => {
 })
 
 // remove cart item
-server.delete('/:userId/cartItems/:itemId', (req, res) => {
+server.delete('/:userId/cartItems/:itemId', async (req, res) => {
   let {userId, itemId} = req.params;
-  let user = users.find(user => user.id == userId);
-  let cartItemIndex = user.cartItems.findIndex(item => item.itemId == itemId)
-  if (cartItemIndex < 0) {
-    res.status(400).json({error: 'item does not exist'})
-    return;
+
+  try {
+    let user = await db.collection('users').findOne({id: +userId})
+    let cartItems = user.cartItems;
+    let itemIndex = cartItems.findIndex(item => item.itemId == itemId)
+    cartItems.splice(itemIndex, 1)
+  
+    let response = await db.collection('users').updateOne({id: +userId}, {$set: {cartItems: cartItems}})
+    return res.status(201).json(response)
+  } catch (error) {
+    return res.status(500).json({"error": `${erroe}`})    
   }
-  user.cartItems.splice(cartItemIndex, 1);
-  res.status(200).json(user.cartItems)
 })
 
 // product auantity change in cart
