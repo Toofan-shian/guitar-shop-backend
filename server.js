@@ -1,6 +1,7 @@
 const express = require('express')
 const {products, users} = require('./data')
 const {connectToDb, getDb} = require('./db')
+const {ObjectId} = require('mongodb')
 
 const server = express()
 
@@ -23,37 +24,60 @@ connectToDb((err) => {
 
 // all products in store
 server.get('/products/all', (req, res) => {
-  let books = []
-  db.collection('books')
+  let products = []
+
+  db.collection('products')
     .find()
-    .forEach(book => books.push(book))
-    .then(() => res.status(200).json(books))
-    .catch( err => console.log(err))
-  // res.status(200).json(products)
+    .forEach(product => products.push(product))
+    .then(() => res.status(200).json(products))
+    .catch((err) => res.status(500).json(err))
 })
 
 // products in cart
 server.get('/:userId/cartItems', (req, res) => {
   let userId = req.params.userId
-  let user = users.find(user => user.id == userId);
-  res.status(200).json(user.cartItems)
+
+  db.collection('users')
+    .findOne({id: +userId})
+    .then(user => res.status(200).json(user.cartItems))
+    .catch(err => res.status(400).json({"error": `${err}`}))
 })
 
 // add to cart from product details
-server.post('/:userId/cartItems', (req, res) => {
+server.post('/:userId/cartItems', async (req, res) => {
   let {product} = req.body;
   let {userId} = req.params;
-  let user = users.find(user => user.id == userId)
-  let userCartItem = user.cartItems.find(p => p.itemId == product.itemId)
-  if (userCartItem) {
-    userCartItem.quantity += 1;
-    res.status(201)
-    res.end()
-    return
+
+  let user = await db.collection('users').findOne({id: +userId})
+  let cartItems = user.cartItems;
+  let cartItemIndex = cartItems.findIndex(p => p.itemId == product.itemId)
+
+  try {
+    if (cartItemIndex < 0) {
+      let response = await db.collection('users').updateOne({id: +userId}, {$addToSet: {cartItems: product}})
+      return res.status(201).json(response)
+    }
+    else {
+      cartItems[cartItemIndex].quantity += 1;
+      console.log(cartItems)
+      let response = await db.collection('users').updateOne({id: +userId}, {$set: {cartItems: cartItems}})
+      return res.status(201).json(response)
+    }
   }
-  user.cartItems.push(product)
-  res.status(201)
-  res.end()
+  catch (err) {
+    return res.status(500).json({"error": `${err}`})
+  }
+  // let user = users.find(user => user.id == userId)
+  // let userCartItem = user.cartItems.find(p => p.itemId == product.itemId)
+  // if (userCartItem) {
+  //   userCartItem.quantity += 1;
+  //   res.status(201)
+  //   res.end()
+  //   return
+  // }
+  // user.cartItems.push(product)
+  // res.status(201)
+  // res.end()
 })
 
 // remove cart item
@@ -69,6 +93,7 @@ server.delete('/:userId/cartItems/:itemId', (req, res) => {
   res.status(200).json(user.cartItems)
 })
 
+// product auantity change in cart
 server.patch('/:userId/cartItems', (req, res) => {
   let {userId} = req.params;
   let {product} = req.body;
