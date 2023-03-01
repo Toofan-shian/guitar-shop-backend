@@ -59,7 +59,6 @@ server.post('/:userId/cartItems', async (req, res) => {
     }
     else {
       cartItems[cartItemIndex].quantity += 1;
-      console.log(cartItems)
       let response = await db.collection('users').updateOne({id: +userId}, {$set: {cartItems: cartItems}})
       return res.status(201).json(response)
     }
@@ -67,17 +66,6 @@ server.post('/:userId/cartItems', async (req, res) => {
   catch (err) {
     return res.status(500).json({"error": `${err}`})
   }
-  // let user = users.find(user => user.id == userId)
-  // let userCartItem = user.cartItems.find(p => p.itemId == product.itemId)
-  // if (userCartItem) {
-  //   userCartItem.quantity += 1;
-  //   res.status(201)
-  //   res.end()
-  //   return
-  // }
-  // user.cartItems.push(product)
-  // res.status(201)
-  // res.end()
 })
 
 // remove cart item
