@@ -1,13 +1,35 @@
 const express = require('express')
 const {products, users} = require('./data')
+const {connectToDb, getDb} = require('./db')
 
 const server = express()
 
 server.use(express.json())
 
+let db;
+connectToDb((err) => {
+  if (err) {
+    console.log(err)
+  } else {
+    db = getDb()
+    server.listen(5000, (err) => {
+      if (err) {
+        console.log(err)
+      }
+      console.log('listening on 5000...')
+    })
+  }
+})
+
 // all products in store
 server.get('/products/all', (req, res) => {
-  res.status(200).json(products)
+  let books = []
+  db.collection('books')
+    .find()
+    .forEach(book => books.push(book))
+    .then(() => res.status(200).json(books))
+    .catch( err => console.log(err))
+  // res.status(200).json(products)
 })
 
 // products in cart
@@ -15,11 +37,6 @@ server.get('/:userId/cartItems', (req, res) => {
   let userId = req.params.userId
   let user = users.find(user => user.id == userId);
   res.status(200).json(user.cartItems)
-
-  
-  // let productIds = user.cartItems.map(item => item.itemId)
-  // let cartItems = productIds.map(id => products.find(p => p.id == id))
-  // res.status(200).json(cartItems)
 })
 
 // add to cart from product details
@@ -61,9 +78,3 @@ server.patch('/:userId/cartItems', (req, res) => {
   res.status(200).json(user.cartItems)
 })
 
-server.listen(5000, (err) => {
-  if (err) {
-    console.log(err)
-  }
-  console.log('listening on 5000...')
-})
