@@ -1,11 +1,19 @@
 const express = require('express')
-const {products, users} = require('./data')
 const {connectToDb, getDb} = require('./db')
-const {ObjectId} = require('mongodb')
+const history = require('connect-history-api-fallback')
+const path = require('path')
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+
+
 
 const server = express()
+server.use(morgan('dev'))
+server.use(bodyParser.json());
+server.use(express.static(path.resolve(__dirname, 'dist'), {maxAge: '1y', etag: false}));
 
-server.use(express.json())
+
+
 
 let db;
 connectToDb((err) => {
@@ -104,3 +112,11 @@ server.patch('/:userId/cartItems', async (req, res) => {
   }
 })
 
+// handle other unhandled routes
+server.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname), '/dist/index.html')
+})
+
+
+server.use(history({verbose: true}));
+server.use(express.static(path.resolve(__dirname, 'dist'), {maxAge: '1y', etag: false}));
