@@ -1,12 +1,13 @@
 const {MongoClient} = require('mongodb')
 
 let dbConnection
+let dbUri = 'mongodb+srv://toofan:test123456@cluster0.bpt6m7c.mongodb.net/?retryWrites=true&w=majority'
 
 module.exports = {
   connectToDb: (cb) => {
-    MongoClient.connect('mongodb://127.0.0.1:27017/guitarShop')
+    MongoClient.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true})
       .then((client) => {
-        dbConnection = client.db();
+        dbConnection = client.db('guitarShop');
         return cb()
       })
       .catch((err) => cb(err))

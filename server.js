@@ -5,9 +5,8 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 
-
-
 const server = express()
+
 server.use(morgan('dev'))
 server.use(bodyParser.json());
 server.use(express.static(path.resolve(__dirname, 'dist'), {maxAge: '1y', etag: false}));
