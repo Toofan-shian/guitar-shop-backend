@@ -31,14 +31,17 @@ connectToDb((err) => {
 
 // all products in store
 server.get('/products/all', (req, res) => {
-  let products = []
+  let products = [];
 
   db.collection('products')
     .find()
     .forEach(product => products.push(product))
     .then(() => res.status(200).json(products))
-    .catch((err) => res.status(500).json(err))
-})
+    .catch((err) => {
+      console.error("Error fetching products:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
 
 // products in cart
 server.get('/:userId/cartItems', (req, res) => {
